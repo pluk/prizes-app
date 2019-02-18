@@ -6,7 +6,6 @@ use App\Entity\User;
 use App\Service\PrizeService;
 use App\Service\ServiceException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,10 +35,10 @@ class PrizeController extends AbstractController
         try {
             $prize = $this->prizeService->create($user);
         } catch (ServiceException $e) {
-            return new JsonResponse([], 500);
+            return $this->json('Internal error', 500);
         }
 
-        return new JsonResponse();
+        return $this->json($prize);
     }
 
     /**
@@ -59,17 +58,9 @@ class PrizeController extends AbstractController
             $prize = $this->prizeService
                 ->update($user, $prizeId, $body['status']);
         } catch (ServiceException $e) {
-            return new JsonResponse([], 500);
+            return $this->json('Internal error', 500);
         }
 
-        return new JsonResponse(['message' => 'Update' . $id]);
-    }
-
-    /**
-     * @Route("/", name="prize_index")
-     */
-    public function index()
-    {
-        return new JsonResponse(['message' => 'Hello world']);
+        return $this->json($prize);
     }
 }

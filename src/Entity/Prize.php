@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PrizeRepository")
  */
-class Prize
+class Prize implements \JsonSerializable
 {
     public const TYPE_MONEY = 'money';
     public const TYPE_GIFT = 'gift';
@@ -128,5 +128,19 @@ class Prize
     public function ensureUserHavePermissions(User $user): bool
     {
         return $this->user->getId() === $user->getId();
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'user_id' => $this->user->getId(),
+            'type' => $this->type,
+            'status' => $this->status,
+            'is_finished' => $this->isFinished,
+            'created_date' => $this->createdDate,
+            'value' => $this->value,
+            'gift' => $this->gift
+        ];
     }
 }
