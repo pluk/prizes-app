@@ -59,7 +59,7 @@ class PrizeService
             $this->em->persist($prize);
             $this->em->flush();
         } catch (\Exception $e) {
-            throw new ServiceException('Ошибка при создании приза', 0, $e);
+            throw new ServiceException('Error creating prize', 0, $e);
         }
 
         return $prize;
@@ -70,11 +70,13 @@ class PrizeService
         $prize = $this->prizeRepository->find($prizeId);
 
         if (!$prize) {
-            throw new NotFoundHttpException();
+            throw new NotFoundHttpException(
+                sprintf('Prize with id = %d not found', $prizeId)
+            );
         }
 
         if (!$prize->ensureUserHavePermissions($user)) {
-            throw new ServiceException();
+            throw new ServiceException('You are not allowed to edit prize');
         }
 
         switch ($status) {

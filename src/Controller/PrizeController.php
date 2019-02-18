@@ -35,10 +35,10 @@ class PrizeController extends AbstractController
         try {
             $prize = $this->prizeService->create($user);
         } catch (ServiceException $e) {
-            return $this->json('Internal error', 500);
+            return $this->json(['message' => 'Internal error'], 500);
         }
 
-        return $this->json($prize);
+        return $this->json($prize, 201);
     }
 
     /**
@@ -51,14 +51,17 @@ class PrizeController extends AbstractController
         $body = json_decode($request->getContent(), true);
 
         if (!isset($body['status'])) {
-            throw new BadRequestHttpException();
+            return $this->json(
+                ['message' => 'status parameter is required'],
+                400
+            );
         }
 
         try {
             $prize = $this->prizeService
                 ->update($user, $prizeId, $body['status']);
         } catch (ServiceException $e) {
-            return $this->json('Internal error', 500);
+            return $this->json(['message' => 'Internal error'], 500);
         }
 
         return $this->json($prize);
