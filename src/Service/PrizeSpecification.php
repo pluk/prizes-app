@@ -9,32 +9,37 @@
 namespace App\Service;
 
 
-use App\Entity\Prize;
-use App\Entity\User;
+use App\Entity\{Prize, User};
 use App\Repository\PrizeRepository;
 
-class GiftSpecification
+class PrizeSpecification
 {
-    public const GIFT_PRIZES_LIMIT = 1;
+    /**
+     * @var MoneySpecification
+     */
+    private $moneySpecification;
 
     /**
-     * @var PrizeRepository
+     * @var GiftSpecification
      */
-    private $prizeRepository;
+    private $giftSpecification;
 
     public function __construct(PrizeRepository $prizeRepository)
     {
-        $this->prizeRepository = $prizeRepository;
+        $this->moneySpecification = new MoneySpecification($prizeRepository);
+        $this->giftSpecification = new GiftSpecification($prizeRepository);
     }
 
-    public function isSatisfiedBy(User $user): bool
+    public function isSatisfiedBy(User $user, string $prizeType): bool
     {
-        return $this->prizeRepository->count(
-            [
-                'user_id' => $user->getId(),
-                'type' => Prize::TYPE_GIFT,
-                'created_date' => new \DateTime()
-            ]
-            ) < self::GIFT_PRIZES_LIMIT;
+        if ($prizeType == Prize::TYPE_MONEY) {
+            return $this->moneySpecification->isSatisfiedBy($user);
+        }
+
+        if ($prizeType == Prize::TYPE_GIFT) {
+            return $this->giftSpecification->isSatisfiedBy($user);
+        }
+
+        return true;
     }
 }

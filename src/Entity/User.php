@@ -31,13 +31,20 @@ class User implements UserInterface, \Serializable
     private $password;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $bonusAccount;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Prize", mappedBy="user")
      */
     private $prizes;
 
-    public function __construct()
+    public function __construct(string $username)
     {
+        $this->username = $username;
         $this->prizes = new ArrayCollection();
+        $this->bonusAccount = 0;
     }
 
     public function getId(): ?int
@@ -53,6 +60,20 @@ class User implements UserInterface, \Serializable
     public function getPassword()
     {
         return $this->password;
+    }
+
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
+    public function creditBonusToAccount(int $value): void
+    {
+        if ($value < 0) {
+            throw new \Exception();
+        }
+
+        $this->bonusAccount += $value;
     }
 
     public function getSalt()

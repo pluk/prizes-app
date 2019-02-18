@@ -1,21 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: pluk
- * Date: 17.02.19
- * Time: 11:45
- */
 
 namespace App\Service;
-
 
 use App\Entity\Prize;
 use App\Entity\User;
 use App\Repository\PrizeRepository;
 
-class MoneySpecification
+class GiftSpecification
 {
-    public const MONEY_PRIZES_LIMIT = 3;
+    public const GIFT_PRIZES_LIMIT = 1;
 
     /**
      * @var PrizeRepository
@@ -29,12 +22,9 @@ class MoneySpecification
 
     public function isSatisfiedBy(User $user): bool
     {
-        return $this->prizeRepository->count(
-            [
-                'user_id' => $user->getId(),
-                'type' => Prize::TYPE_MONEY,
-                'created_date' => new \DateTime()
-            ]
-            ) < self::MONEY_PRIZES_LIMIT;
+        $giftPrizesPerDay = $this->prizeRepository
+            ->findAllPrizesPerDay($user, Prize::TYPE_GIFT);
+
+        return count($giftPrizesPerDay) < self::GIFT_PRIZES_LIMIT;
     }
 }

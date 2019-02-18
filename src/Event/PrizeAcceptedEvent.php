@@ -1,15 +1,26 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: pluk
- * Date: 17.02.19
- * Time: 23:55
- */
 
 namespace App\Event;
 
+use App\Entity\Prize;
+use Symfony\Component\EventDispatcher\Event;
 
-class PrizeAcceptedEvent
+class PrizeAcceptedEvent extends Event
 {
+    const NAME = 'prize.accepted';
+    /**
+     * @var Prize
+     */
+    private $prize;
 
+
+    public function __construct(Prize $prize)
+    {
+        $this->prize = $prize;
+    }
+
+    public function getPrize(): Prize
+    {
+        return $this->prize;
+    }
 }

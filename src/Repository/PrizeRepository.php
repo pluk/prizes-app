@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Prize;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -19,32 +20,29 @@ class PrizeRepository extends ServiceEntityRepository
         parent::__construct($registry, Prize::class);
     }
 
-    // /**
-    //  * @return Prize[] Returns an array of Prize objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findAllPrizesPerDay(User $user, string $type): array
     {
         return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
+            ->andWhere('p.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere('p.type = :type')
+            ->setParameter('type', $type)
+            ->andWhere('p.createdDate > :today')
+            ->setParameter('today', new \DateTime('today'))
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Prize
+    public function findNotFinishedMoneyPrizes(): array
     {
         return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('p.type = :type')
+            ->setParameter('type', Prize::TYPE_MONEY)
+            ->andWhere('p.isFinished = :isFinished')
+            ->setParameter('isFinished', false)
+            ->andWhere('p.status = :status')
+            ->setParameter('status', Prize::STATUS_ACCEPTED)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getResult();
     }
-    */
 }
